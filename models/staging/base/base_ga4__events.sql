@@ -21,9 +21,9 @@ with source as (
     select
         {{ ga4.base_select_source() }}
     from {{ source('ga4', 'events') }}
-    where cast(event_date as int64) >= {{var('start_date')}}
+    where dt >= parse_date('%Y%m%d', {{var('start_date')}})
     {% if is_incremental() %}
-        and parse_date('%Y%m%d', event_date) in ({{ partitions_to_replace | join(',') }})
+        and dt in ({{ partitions_to_replace | join(',') }})
     {% endif %}
 ),
 renamed as (
