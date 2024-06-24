@@ -12,7 +12,6 @@
             "field": "event_date_dt",
             "data_type": "date",
         },
-        partitions = partitions_to_replace,
         cluster_by=['event_name']
     )
 }}
@@ -22,9 +21,8 @@ with source as (
         {{ ga4.base_select_source() }}
     from {{ source('ga4', 'events') }}
     where dt >= parse_date('%Y%m%d', {{var('start_date')}})
-    {% if is_incremental() %}
-        and dt in ({{ partitions_to_replace | join(',') }})
-    {% endif %}
+    and dt < parse_date('%Y%m%d', {{var('end_date')}})
+ 
 ),
 renamed as (
     select
